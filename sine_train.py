@@ -33,7 +33,7 @@ def draw(y, test, i):
     plt.plot(np.arange(999, 1999), y[0][999:], linestyle=':', linewidth=2.0, color = 'blue')
     plt.plot(np.arange(999, 1999), y[1][999:], linestyle=':', linewidth=2.0, color = 'yellow')
     plt.plot(np.arange(999, 1999), y[2][999:], linestyle=':', linewidth=2.0, color = 'red')
-    print(i)
+    # print(i)
     plt.savefig('predict' + str(i) + '.jpg' )
     plt.close()
 
@@ -43,15 +43,16 @@ def closure():
     optimizer.zero_grad()
     out = model(input)
     loss = lossfunc(out, target).to(device)
-    print('loss:', loss.item())
+    print('\tloss:', loss.item())
     loss.backward()
     return loss
 
 
 def train():
     for epoch in range(epochs):
+        print('Epoch  ' + str(epoch + 1) + ': ')
         optimizer.step(closure)
-        test(epoch)
+        test(epoch + 1)
 
 
 def test(id):
@@ -59,7 +60,7 @@ def test(id):
         predict = 1000
         pred = model(test_input, predict=predict)
         loss = lossfunc(pred[:, :-predict], test_target)
-        print('test loss:', loss.item())
+        print('\ttest loss:', loss.item())
         y = pred.detach().cpu().numpy()
     draw(y, test_target.cpu().numpy(), id)
 
