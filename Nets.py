@@ -63,7 +63,7 @@ class SineRnn(nn.Module):
 
 class EmotionRnn(nn.Module):
     def __init__(self, in_features=50, hide_features=100, out_features=2):
-        super(SineRnn, self).__init__()
+        super(EmotionRnn, self).__init__()
         self.hide_features = hide_features
         self.lstm_cell1 = LSTMCell(in_features, hide_features)
         self.lstm_cell2 = LSTMCell(hide_features, hide_features)

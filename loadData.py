@@ -25,7 +25,7 @@ def get_sentence_seq(sentence, dict):
     res = []
     cnt = 0
     for word in words:
-        if word in dict.keys:
+        if word in dict.keys():
             res.append(dict[word])
             cnt += 1
         if cnt == 50:
@@ -34,7 +34,7 @@ def get_sentence_seq(sentence, dict):
     zeros = [0 for _ in range(50)]
 
     for i in range(50 - cnt):
-        res.insert(zeros[:])
+        res.insert(0, zeros)
     return res
 
 
@@ -61,7 +61,6 @@ def get_dataset(pos_file, neg_file, dict, shuffle=True):
         permutaion = np.random.permutation(len(train_target))
         train_data_shuffle = np.zeros(np.shape(train_data))
         train_target_shuffle = np.zeros(np.shape(train_target))
-        print(np.shape(train_target))
         for i in range(len(train_target)):
             train_data_shuffle[i] = np.array(train_data[permutaion[i]])
             train_target_shuffle[i] = np.array(train_target[permutaion[i]])
@@ -70,7 +69,7 @@ def get_dataset(pos_file, neg_file, dict, shuffle=True):
         return train_data, train_target, test_data, test_target
 
 class MyEmotonSet(Dataset):
-    def __init__(self, root_path, train=True, transform_target=None):
+    def __init__(self, root_path, train=True):
         super(MyEmotonSet, self).__init__()
         dict = build_dic(root_path + 'glove.6B.50d.txt')
         train_data, train_target, test_data, test_target = get_dataset(
