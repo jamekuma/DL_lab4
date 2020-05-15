@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--lr', dest='learn_rate', default=0.1, type=int)
-parser.add_argument('--epochs', dest='epochs', default=100, type=int)
+parser.add_argument('--epochs', dest='epochs', default=20, type=int)
 args = parser.parse_args()
 learn_rate = args.learn_rate
 epochs = args.epochs
@@ -22,6 +22,7 @@ else:
 
 # 画线
 def draw(y, test, i):
+    plt.figure(figsize = (40,20))
     plt.xlabel('x')
     plt.ylabel('y')
     plt.xticks()
