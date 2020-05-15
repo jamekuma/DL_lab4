@@ -1,6 +1,6 @@
 import torch
 import argparse
-from LSTM import LSTMRnn
+from Nets import SineRnn
 import torch.nn as nn
 import numpy as np
 import matplotlib
@@ -72,7 +72,7 @@ test_input = torch.from_numpy(data[:3, :-1]).to(device)
 test_target = torch.from_numpy(data[:3, 1:]).to(device)
 
 lossfunc = nn.MSELoss()
-model = LSTMRnn(in_features=1, hide_features=20, out_features=1).to(device).double()
+model = SineRnn(in_features=1, hide_features=20, out_features=1).to(device).double()
 optimizer = torch.optim.LBFGS(model.parameters(), lr=learn_rate)
 train_data = torch.from_numpy(torch.load('traindata.pt')).to(device)
 train()

@@ -31,21 +31,21 @@ class LSTMCell(nn.Module):
         return ht, ct
 
 
-class LSTMRnn(nn.Module):
+class SineRnn(nn.Module):
     def __init__(self, in_features=1, hide_features=50, out_features=1):
-        super(LSTMRnn, self).__init__()
+        super(SineRnn, self).__init__()
         self.hide_features = hide_features
         self.lstm_cell1 = LSTMCell(in_features, hide_features)
         self.lstm_cell2 = LSTMCell(hide_features, hide_features)
         self.linear = nn.Linear(in_features=hide_features, out_features=out_features)
 
     def forward(self, seq, predict=0):
-        seq = seq.chunk(seq.size(1), dim=1)
         out = []
-        ht_1 = torch.zeros(self.hide_features, dtype=torch.double).to(device)
-        ct_1 = torch.zeros(self.hide_features, dtype=torch.double).to(device)
-        ht_2 = torch.zeros(self.hide_features, dtype=torch.double).to(device)
-        ct_2 = torch.zeros(self.hide_features, dtype=torch.double).to(device)
+        ht_1 = torch.zeros(seq.size(0), self.hide_features, dtype=torch.double).to(device)
+        ct_1 = torch.zeros(seq.size(0), self.hide_features, dtype=torch.double).to(device)
+        ht_2 = torch.zeros(seq.size(0), self.hide_features, dtype=torch.double).to(device)
+        ct_2 = torch.zeros(seq.size(0), self.hide_features, dtype=torch.double).to(device)
+        seq = seq.chunk(seq.size(1), dim=1)
         o = None
         for x in seq:
             ht_1, ct_1 = self.lstm_cell1(x, ht_1, ct_1)
@@ -59,3 +59,31 @@ class LSTMRnn(nn.Module):
             out += [o]
         out = torch.stack(out, 1).squeeze(2)
         return out
+
+
+class EmotionRnn(nn.Module):
+    def __init__(self, in_features=50, hide_features=100, out_features=2):
+        super(SineRnn, self).__init__()
+        self.hide_features = hide_features
+        self.lstm_cell1 = LSTMCell(in_features, hide_features)
+        self.lstm_cell2 = LSTMCell(hide_features, hide_features)
+        self.linear = nn.Linear(in_features=hide_features * 50, out_features=out_features)
+
+    def forward(self, seq):
+        seq = seq.squeeze(1)
+        ht_1 = torch.zeros(self.hide_features, dtype=torch.double).to(device)
+        ct_1 = torch.zeros(self.hide_features, dtype=torch.double).to(device)
+        ht_2 = torch.zeros(self.hide_features, dtype=torch.double).to(device)
+        ct_2 = torch.zeros(self.hide_features, dtype=torch.double).to(device)
+        out = None
+        for x in seq:
+            ht_1, ct_1 = self.lstm_cell1(x, ht_1, ct_1)
+            ht_2, ct_2 = self.lstm_cell2(ht_1, ht_2, ct_2)
+            o = self.linear(ht_2)
+            if out is None:
+                out = ht_2
+            else:
+                out = torch.cat((out, ht_2), dim=1)
+
+        out = self.linear(out)
+        return torch.softmax(out, 1)
