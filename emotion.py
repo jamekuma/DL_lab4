@@ -25,6 +25,8 @@ def train(model, train_dataset, test_dataset, log_name, n_epochs, batch_size, le
         train_loss = 0.0
         for data, target in train_loader:
             data = data.to(device)
+            # print('data: ')
+            # print(data.size())
             target = target.to(device)
             optimizer.zero_grad()  # 清空上一步的残余更新参数值
             output = model(data)  # 得到预测值
@@ -39,18 +41,18 @@ def train(model, train_dataset, test_dataset, log_name, n_epochs, batch_size, le
         # 每遍历一遍数据集，测试一下准确率
         # train_accuracy = test(model, train_loader) # 训练集准确率
         # print('\ttrain Accuracy: %.4f %%' % (100 * train_accuracy))
-        test_accuracy = test(model, test_dataset)  # 测试集准确率
+        test_accuracy = test(model, test_dataset, batch_size)  # 测试集准确率
         print('\ttest Accuracy: %.4f %%' % (100 * test_accuracy))
 
         writer.add_scalar('train/Loss', train_loss, epoch + 1)
-        writer.add_scalar('train/Accuracy', train_accuracy, epoch + 1)
+        # writer.add_scalar('train/Accuracy', train_accuracy, epoch + 1)
         writer.add_scalar('test/Accuracy', test_accuracy, epoch + 1)
         writer.flush()
     writer.close()
 
 
 # 在数据集上测试神经网络
-def test(model, test_dataset):
+def test(model, test_dataset, batch_size):
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size)
     model.eval()
     correct = 0
@@ -76,4 +78,4 @@ if __name__ == '__main__':
     model = EmotionRnn().to(device).double()
     train_set = MyEmotonSet(root_path='./', train=True)
     test_set = MyEmotonSet(root_path='./', train=False)
-    train(model, train_set, test, log_name='Emotion', n_epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr)
+    train(model, train_set, test_set, log_name='Emotion', n_epochs=args.epochs, batch_size=args.batch_size, learning_rate=args.lr)
