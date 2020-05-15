@@ -32,7 +32,7 @@ class LSTMCell(nn.Module):
 
 
 class LSTMRnn(nn.Module):
-    def __init__(self, in_features=1, hide_features=20, out_features=1):
+    def __init__(self, in_features=1, hide_features=50, out_features=1):
         super(LSTMRnn, self).__init__()
         self.h0 = torch.zeros(hide_features, dtype=torch.double).to(device)
         self.c0 = torch.zeros(out_features, dtype=torch.double).to(device)
